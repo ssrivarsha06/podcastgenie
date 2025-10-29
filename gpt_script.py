@@ -1,7 +1,7 @@
 import requests
 
 # Replace this with your actual Groq API key
-API_KEY = "YOUR_GROK_API_KEY"
+API_KEY = "YOUR_GROQ_API"
 
 def generate_podcast_script(topic):
     prompt = f"""
@@ -37,7 +37,7 @@ Remember: ALWAYS format as "SPEAKER: dialogue" on the same line!
     }
 
     data = {
-        "model": "llama3.3-70b-versatile",     # ← updated model
+        "model": "openai/gpt-oss-20b",   # ✅ Updated supported model
         "messages": [
             {"role": "user", "content": prompt}
         ],
@@ -49,6 +49,7 @@ Remember: ALWAYS format as "SPEAKER: dialogue" on the same line!
 
     if response.status_code == 200:
         generated_script = response.json()["choices"][0]["message"]["content"]
+        print("🧾 RAW MODEL OUTPUT:\n", generated_script)  # 👀 debug line
         return clean_script_format(generated_script)
     else:
         return f"Error: {response.status_code} - {response.text}"
@@ -61,7 +62,7 @@ def clean_script_format(script):
 
     while i < len(lines):
         line = lines[i].strip()
-        if line.endswith(':') and (line.startswith('HOST') or line.startswith('GUEST')):
+        if line.endswith(':') and (line.upper().startswith('HOST') or line.upper().startswith('GUEST')):
             if i + 1 < len(lines) and lines[i + 1].strip():
                 dialogue = lines[i + 1].strip()
                 cleaned_lines.append(f"{line} {dialogue}")

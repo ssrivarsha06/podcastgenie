@@ -1,6 +1,7 @@
 import requests
 
-API_KEY = "fbd924aca9d265d6faab0e10dabc8a8545600586726ea214f4e8ce6c970b4ca1"
+# Replace this with your actual Groq API key
+API_KEY = "YOUR_GROK_API_KEY"
 
 def generate_podcast_script(topic):
     prompt = f"""
@@ -29,15 +30,17 @@ Create a natural 3-minute conversation about "{topic}" with:
 Remember: ALWAYS format as "SPEAKER: dialogue" on the same line!
 """
 
-    url = "https://api.together.xyz/v1/chat/completions"
+    url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
 
     data = {
-        "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        "messages": [{"role": "user", "content": prompt}],
+        "model": "llama3.3-70b-versatile",     # ← updated model
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
         "temperature": 0.7,
         "max_tokens": 1500
     }
@@ -46,7 +49,6 @@ Remember: ALWAYS format as "SPEAKER: dialogue" on the same line!
 
     if response.status_code == 200:
         generated_script = response.json()["choices"][0]["message"]["content"]
-        # Post-process to ensure correct format
         return clean_script_format(generated_script)
     else:
         return f"Error: {response.status_code} - {response.text}"
@@ -56,22 +58,19 @@ def clean_script_format(script):
     lines = script.split('\n')
     cleaned_lines = []
     i = 0
-    
+
     while i < len(lines):
         line = lines[i].strip()
-        
-        # If line ends with colon (speaker name), merge with next line
         if line.endswith(':') and (line.startswith('HOST') or line.startswith('GUEST')):
             if i + 1 < len(lines) and lines[i + 1].strip():
-                # Merge speaker name with dialogue
                 dialogue = lines[i + 1].strip()
                 cleaned_lines.append(f"{line} {dialogue}")
-                i += 2  # Skip next line since we merged it
+                i += 2
             else:
                 cleaned_lines.append(line)
                 i += 1
         else:
             cleaned_lines.append(line)
             i += 1
-    
+
     return '\n'.join(cleaned_lines)

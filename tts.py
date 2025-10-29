@@ -5,7 +5,7 @@ from elevenlabs import generate, save, set_api_key
 from pydub import AudioSegment
 
 # Set ElevenLabs API Key
-set_api_key("YOUR-ELEVENLABS-API-KEY")
+set_api_key("sk_2f9c551fc4207b3ac823ea06b8500e1fd46e5d5228160142")
 
 # Voice IDs
 VOICE_IDS = {

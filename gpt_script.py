@@ -1,7 +1,7 @@
 import requests
 
 # Replace this with your actual Groq API key
-API_KEY = "YOUR_GROQ_API"
+API_KEY = "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"
 
 def generate_podcast_script(topic):
     prompt = f"""
